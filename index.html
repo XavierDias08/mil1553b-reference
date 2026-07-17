@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MIL-STD-1553B Protocol Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #0B1116;
+    --panel: #111a21;
+    --panel-2: #16212a;
+    --line: #24333d;
+    --line-strong: #34474f;
+    --amber: #FFB000;
+    --amber-dim: #8a6218;
+    --teal: #3FD6C0;
+    --teal-dim: #1c6b60;
+    --coral: #FF6B4A;
+    --text: #DCE4E8;
+    --text-dim: #8a99a2;
+    --text-faint: #5b6970;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Inter',sans-serif; line-height:1.65;
+    padding:0 0 80px;
+  }
+  .wrap{ max-width:920px; margin:0 auto; padding:0 32px; }
+
+  /* HERO */
+  .hero{
+    background:
+      linear-gradient(180deg, rgba(255,176,0,0.05), transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(255,255,255,0.015) 28px),
+      var(--panel);
+    border-bottom:1px solid var(--line);
+    padding:64px 32px 40px;
+  }
+  .hero-inner{ max-width:920px; margin:0 auto; }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.18em;
+    color:var(--amber); text-transform:uppercase; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--amber); box-shadow:0 0 8px var(--amber); }
+  h1{
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:38px;
+    margin:14px 0 6px; letter-spacing:-0.01em; color:#fff;
+  }
+  .subtitle{ color:var(--text-dim); font-size:16px; max-width:620px; }
+  .hero-stats{ display:flex; gap:0; margin-top:32px; border-top:1px solid var(--line); }
+  .stat{ flex:1; padding:18px 20px 0; border-right:1px solid var(--line); }
+  .stat:last-child{ border-right:none; }
+  .stat-val{ font-family:'JetBrains Mono',monospace; font-size:22px; color:var(--teal); font-weight:700; }
+  .stat-label{ font-size:12px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:4px; }
+
+  section{ padding:48px 0 8px; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  .sec-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:18px; }
+  .sec-num{ font-family:'JetBrains Mono',monospace; color:var(--amber-dim); font-size:13px; }
+  h2{ font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; color:#fff; margin:0; }
+  h3{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:500; color:var(--teal); margin:28px 0 10px; }
+  p{ color:var(--text-dim); font-size:15px; margin:8px 0 16px; }
+  strong{ color:var(--text); font-weight:600; }
+  code{ font-family:'JetBrains Mono',monospace; background:var(--panel-2); border:1px solid var(--line); padding:1px 6px; border-radius:4px; font-size:13px; color:var(--teal); }
+
+  ul{ margin:0 0 16px; padding-left:0; list-style:none; }
+  li{ position:relative; padding-left:20px; margin-bottom:8px; color:var(--text-dim); font-size:15px; }
+  li::before{ content:'▸'; position:absolute; left:0; color:var(--amber-dim); }
+
+  .card-row{ display:flex; gap:16px; margin:20px 0; flex-wrap:wrap; }
+  .card{ flex:1; min-width:220px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:18px 20px; }
+  .card-title{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--amber); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em; }
+  .card p{ margin:0; font-size:14px; }
+
+  .diagram-box{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin:20px 0; }
+  .diagram-caption{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-faint); margin-top:10px; text-align:center; }
+
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  th{ font-family:'JetBrains Mono',monospace; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); border-bottom:1px solid var(--line-strong); padding:8px 10px; }
+  td{ padding:10px 10px; border-bottom:1px solid var(--line); color:var(--text-dim); }
+  td:first-child, th:first-child{ color:var(--text); }
+  tr:last-child td{ border-bottom:none; }
+
+  .callout{ border-left:2px solid var(--teal); background:rgba(63,214,192,0.06); padding:14px 18px; border-radius:0 6px 6px 0; margin:20px 0; }
+  .callout p{ margin:0; color:var(--text); font-size:14px; }
+  .callout .label{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--teal); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; display:block; }
+
+  footer{ text-align:center; padding:40px 0 0; color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:12px; }
+
+  /* LIVE TRANSACTION SIMULATION */
+  .live-box{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:24px 20px 20px; margin:20px 0; }
+  .live-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+  .live-title{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
+  .live-phase{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--amber); min-height:18px; transition:color .2s; }
+  .live-stage{ position:relative; height:110px; }
+  .live-node{
+    position:absolute; top:32px; width:110px; height:46px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background:var(--panel-2); border:1px solid var(--line-strong);
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--text);
+    transition:border-color .2s, box-shadow .2s; z-index:2;
+  }
+  .live-node.active{ border-color:var(--amber); box-shadow:0 0 14px rgba(255,176,0,0.25); }
+  .live-node .sub{ font-size:9px; font-weight:400; color:var(--text-faint); margin-top:2px; text-transform:none; }
+  .live-node.bc{ left:0; }
+  .live-node.rt{ right:0; }
+  .live-track{ position:absolute; top:54px; left:120px; right:120px; height:2px; background:var(--line-strong); }
+  .live-packet{
+    position:absolute; top:38px; left:120px; width:0; padding:6px 0;
+    height:22px; border-radius:5px; opacity:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.04em;
+    z-index:3; white-space:nowrap; overflow:hidden;
+  }
+  .live-packet.cmd{ background:rgba(255,176,0,0.15); border:1px solid var(--amber); color:var(--amber); }
+  .live-packet.data{ background:rgba(63,214,192,0.15); border:1px solid var(--teal); color:var(--teal); }
+  .live-packet.status{ background:rgba(255,107,74,0.15); border:1px solid var(--coral); color:var(--coral); }
+  .live-controls{ display:flex; justify-content:center; margin-top:16px; }
+  .live-btn{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--bg); background:var(--amber);
+    border:none; border-radius:6px; padding:8px 18px; cursor:pointer; font-weight:700; letter-spacing:0.04em;
+  }
+  .live-btn:hover{ opacity:0.88; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Protocol reference</div>
+    <h1>MIL-STD-1553B</h1>
+    <p class="subtitle">Dual-redundant serial data bus for command/response communication between avionics and embedded systems &mdash; standardized 1978, revised 1980.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-val">1 Mbps</div><div class="stat-label">Manchester II</div></div>
+      <div class="stat"><div class="stat-val">31</div><div class="stat-label">Remote terminals</div></div>
+      <div class="stat"><div class="stat-val">20 bit</div><div class="stat-label">Word length</div></div>
+      <div class="stat"><div class="stat-val">32</div><div class="stat-label">Max words / msg</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 1. ARCHITECTURE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Core architecture</h2></div>
+    <p>The bus is a shared, dual-redundant twisted-shielded-pair cable. One <strong>Bus Controller (BC)</strong> owns all traffic initiation; up to 31 <strong>Remote Terminals (RT)</strong> only speak when addressed; an optional <strong>Bus Monitor (BM)</strong> listens passively for diagnostics.</p>
+
+    <div class="diagram-box">
+      <svg width="100%" viewBox="0 0 680 300" role="img" aria-label="Bus topology diagram">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#5b6970" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <line x1="50" y1="60" x2="630" y2="60" stroke="#FFB000" stroke-width="2.5"/>
+        <text x="50" y="44" font-family="JetBrains Mono, monospace" font-size="12" fill="#8a6218">BUS A — PRIMARY</text>
+        <line x1="50" y1="110" x2="630" y2="110" stroke="#3FD6C0" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <text x="50" y="94" font-family="JetBrains Mono, monospace" font-size="12" fill="#1c6b60">BUS B — REDUNDANT</text>
+
+        <g>
+          <rect x="40" y="160" width="150" height="60" rx="8" fill="#16212a" stroke="#FFB000" stroke-width="1"/>
+          <text x="115" y="184" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">BUS CONTROLLER</text>
+          <text x="115" y="204" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="12">initiates all commands</text>
+        </g>
+        <line x1="115" y1="160" x2="115" y2="110" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="140" y1="160" x2="140" y2="60" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <g>
+          <rect x="230" y="160" width="120" height="60" rx="8" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+          <text x="290" y="186" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">RT 01</text>
+          <text x="290" y="204" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">addr 00000</text>
+        </g>
+        <line x1="270" y1="160" x2="270" y2="60" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="300" y1="160" x2="300" y2="110" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <g>
+          <rect x="390" y="160" width="120" height="60" rx="8" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+          <text x="450" y="186" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">RT 02</text>
+          <text x="450" y="204" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">addr 00001</text>
+        </g>
+        <line x1="430" y1="160" x2="430" y2="60" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="460" y1="160" x2="460" y2="110" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <g>
+          <rect x="480" y="240" width="150" height="45" rx="8" fill="#16212a" stroke="#FF6B4A" stroke-width="1"/>
+          <text x="555" y="268" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">BUS MONITOR</text>
+        </g>
+        <line x1="555" y1="240" x2="555" y2="110" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="590" y1="240" x2="590" y2="60" stroke="#8a99a2" stroke-width="1" marker-end="url(#arrow)"/>
+      </svg>
+      <div class="diagram-caption">FIG. 1 — Dual-redundant bus topology with stub-coupled terminals</div>
+    </div>
+
+    <div class="card-row">
+      <div class="card"><div class="card-title">Bus controller</div><p>One active BC at a time. Owns the schedule; nothing transmits without a command.</p></div>
+      <div class="card"><div class="card-title">Remote terminal</div><p>5-bit address (0&ndash;30). Address 31 reserved for broadcast &mdash; 31 usable RTs.</p></div>
+      <div class="card"><div class="card-title">Bus monitor</div><p>Passive listener for logging/diagnostics. Never transmits into the exchange.</p></div>
+    </div>
+  </section>
+
+  <!-- 2. WORD FORMAT -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Word format</h2></div>
+    <p>Every word on the bus is <strong>20 bits</strong>, Manchester II biphase encoded at <strong>1 Mbps</strong> &mdash; self-clocking and DC-balanced, which suits transformer coupling.</p>
+
+    <div class="diagram-box">
+      <svg width="100%" viewBox="0 0 680 130" role="img" aria-label="20-bit word structure">
+        <rect x="40" y="30" width="90" height="50" fill="#16212a" stroke="#FF6B4A" stroke-width="1"/>
+        <text x="85" y="52" text-anchor="middle" fill="#FF6B4A" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">SYNC</text>
+        <text x="85" y="68" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">3 bits</text>
+
+        <rect x="130" y="30" width="420" height="50" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+        <text x="340" y="52" text-anchor="middle" fill="#3FD6C0" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">INFORMATION</text>
+        <text x="340" y="68" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">16 bits</text>
+
+        <rect x="550" y="30" width="90" height="50" fill="#16212a" stroke="#FFB000" stroke-width="1"/>
+        <text x="595" y="52" text-anchor="middle" fill="#FFB000" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">PARITY</text>
+        <text x="595" y="68" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">1 bit (odd)</text>
+
+        <text x="340" y="110" text-anchor="middle" fill="#5b6970" font-family="JetBrains Mono, monospace" font-size="12">20 BITS TOTAL — MANCHESTER II · 1 Mbps</text>
+      </svg>
+      <div class="diagram-caption">FIG. 2 — 20-bit word envelope shared by all three word types</div>
+    </div>
+
+    <table>
+      <tr><th>Word type</th><th>Sent by</th><th>Purpose</th></tr>
+      <tr><td>Command word</td><td>BC</td><td>RT address, T/R bit, subaddress/mode field, word count</td></tr>
+      <tr><td>Data word</td><td>BC or RT</td><td>16-bit payload</td></tr>
+      <tr><td>Status word</td><td>RT</td><td>Errors, busy state, service request flag</td></tr>
+    </table>
+  </section>
+
+  <!-- 3. TRANSACTIONS -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Transaction sequence</h2></div>
+    <p>Every transaction, regardless of type, <strong>begins with a command word from the BC</strong>. No RT ever transmits first.</p>
+
+    <div class="live-box">
+      <div class="live-head">
+        <div class="live-title">Live simulation — BC to RT transfer</div>
+        <div class="live-phase" id="live-phase">standing by</div>
+      </div>
+      <div class="live-stage">
+        <div class="live-node bc" id="node-bc">BC<span class="sub">bus controller</span></div>
+        <div class="live-track"></div>
+        <div class="live-node rt" id="node-rt">RT 01<span class="sub">remote terminal</span></div>
+        <div class="live-packet cmd" id="pkt-cmd">CMD WORD</div>
+        <div class="live-packet data" id="pkt-data">DATA WORD</div>
+        <div class="live-packet status" id="pkt-status">STATUS WORD</div>
+      </div>
+      <div class="live-controls">
+        <button class="live-btn" onclick="runTransaction()">Replay transaction</button>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--text-faint);margin-top:-6px;">Command word travels BC → RT, data words follow immediately behind it, then the RT returns a single status word to close the transaction.</p>
+
+    <div class="diagram-box">
+      <svg width="100%" viewBox="0 0 680 190" role="img" aria-label="BC to RT transaction flow">
+        <defs>
+          <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#5b6970" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <rect x="20" y="30" width="180" height="60" rx="8" fill="#16212a" stroke="#FFB000" stroke-width="1"/>
+        <text x="110" y="55" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">COMMAND WORD</text>
+        <text x="110" y="74" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">BC → RT</text>
+        <line x1="200" y1="60" x2="248" y2="60" stroke="#8a99a2" marker-end="url(#arrow2)"/>
+
+        <rect x="250" y="30" width="180" height="60" rx="8" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+        <text x="340" y="55" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">DATA WORD(S)</text>
+        <text x="340" y="74" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">1–32 words, BC → RT</text>
+        <line x1="430" y1="60" x2="478" y2="60" stroke="#8a99a2" marker-end="url(#arrow2)"/>
+
+        <rect x="480" y="30" width="180" height="60" rx="8" fill="#16212a" stroke="#FF6B4A" stroke-width="1"/>
+        <text x="570" y="55" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">STATUS WORD</text>
+        <text x="570" y="74" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="11">RT → BC</text>
+
+        <text x="340" y="130" text-anchor="middle" fill="#5b6970" font-family="JetBrains Mono, monospace" font-size="12">BC-TO-RT TRANSFER — RT ACKNOWLEDGES WITH STATUS WORD</text>
+      </svg>
+      <div class="diagram-caption">FIG. 3 — Standard BC-to-RT message transaction</div>
+    </div>
+
+    <table>
+      <tr><th>Type</th><th>Sequence</th></tr>
+      <tr><td>BC → RT</td><td>Command + data words, RT replies with status word</td></tr>
+      <tr><td>RT → BC</td><td>Command word, RT replies with status word + data words</td></tr>
+      <tr><td>RT → RT</td><td>Receive command to RT1, transmit command to RT2 — RT2 sends data directly to RT1, which returns the status word</td></tr>
+      <tr><td>Mode code</td><td>Bus-management commands (sync, reset, transmit BIT word) — no data transfer</td></tr>
+    </table>
+  </section>
+
+  <!-- 4. SRQ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Status word &amp; service request</h2></div>
+    <p>The status word's <strong>bit 8</strong> is the Service Request flag (SRQ). It's how an RT signals it has something urgent, without ever interrupting the bus.</p>
+
+    <div class="diagram-box">
+      <svg width="100%" viewBox="0 0 680 130" role="img" aria-label="Status word bit register">
+        <g font-family="JetBrains Mono, monospace">
+          <!-- bits 1-5: RT address -->
+          <rect x="40" y="30" width="150" height="46" rx="4" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+          <text x="115" y="50" text-anchor="middle" fill="#3FD6C0" font-size="12" font-weight="700">BITS 1–5</text>
+          <text x="115" y="66" text-anchor="middle" fill="#8a99a2" font-size="10">RT address</text>
+
+          <rect x="200" y="30" width="90" height="46" rx="4" fill="#16212a" stroke="#34474f" stroke-width="1"/>
+          <text x="245" y="50" text-anchor="middle" fill="#8a99a2" font-size="12" font-weight="700">BIT 6</text>
+          <text x="245" y="66" text-anchor="middle" fill="#5b6970" font-size="10">msg error</text>
+
+          <rect x="300" y="30" width="90" height="46" rx="4" fill="#16212a" stroke="#34474f" stroke-width="1"/>
+          <text x="345" y="50" text-anchor="middle" fill="#8a99a2" font-size="12" font-weight="700">BIT 7</text>
+          <text x="345" y="66" text-anchor="middle" fill="#5b6970" font-size="10">instrument.</text>
+
+          <rect x="400" y="24" width="120" height="58" rx="4" fill="rgba(255,176,0,0.08)" stroke="#FFB000" stroke-width="1.5"/>
+          <text x="460" y="46" text-anchor="middle" fill="#FFB000" font-size="13" font-weight="700">BIT 8 — SRQ</text>
+          <text x="460" y="64" text-anchor="middle" fill="#e0b45a" font-size="10">service request</text>
+
+          <rect x="530" y="30" width="110" height="46" rx="4" fill="#16212a" stroke="#34474f" stroke-width="1"/>
+          <text x="585" y="50" text-anchor="middle" fill="#8a99a2" font-size="12" font-weight="700">BITS 9–16</text>
+          <text x="585" y="66" text-anchor="middle" fill="#5b6970" font-size="10">reserved / flags</text>
+        </g>
+        <text x="340" y="112" text-anchor="middle" fill="#5b6970" font-family="JetBrains Mono, monospace" font-size="12">RT SETS SRQ=1 ON ITS NEXT STATUS WORD — BC MAY POLL VIA TRANSMIT VECTOR WORD</text>
+      </svg>
+      <div class="diagram-caption">FIG. 4 — Status word bit layout, service request highlighted</div>
+    </div>
+
+    <div class="callout">
+      <span class="label">Important nuance</span>
+      <p>SRQ does not interrupt the bus. The RT cannot transmit on its own — it only piggybacks the flag on its next scheduled status word. The BC decides if and when to act, typically by issuing a <strong>Transmit Vector Word</strong> mode code. This keeps the core rule intact: the BC is always in control, RTs only ever respond.</p>
+    </div>
+  </section>
+
+  <!-- 5. STUBBING -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Stubbing</h2></div>
+    <p>Stubbing is how a terminal physically taps into the main bus without disrupting its electrical characteristics. Two coupling methods are defined.</p>
+
+    <div class="diagram-box">
+      <svg width="100%" viewBox="0 0 680 220" role="img" aria-label="Transformer coupled vs direct coupled stub comparison">
+        <line x1="40" y1="60" x2="640" y2="60" stroke="#FFB000" stroke-width="2"/>
+        <text x="40" y="44" fill="#8a6218" font-family="JetBrains Mono, monospace" font-size="11">MAIN BUS</text>
+
+        <!-- transformer coupled -->
+        <line x1="150" y1="60" x2="150" y2="90" stroke="#8a99a2" stroke-width="1.5"/>
+        <circle cx="150" cy="105" r="16" fill="none" stroke="#3FD6C0" stroke-width="1.5"/>
+        <circle cx="150" cy="105" r="9" fill="none" stroke="#3FD6C0" stroke-width="1"/>
+        <line x1="150" y1="121" x2="150" y2="150" stroke="#8a99a2" stroke-width="1.5"/>
+        <rect x="90" y="150" width="120" height="46" rx="6" fill="#16212a" stroke="#3FD6C0" stroke-width="1"/>
+        <text x="150" y="170" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">TRANSFORMER</text>
+        <text x="150" y="186" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="10">coupled — up to 20 ft</text>
+
+        <!-- direct coupled -->
+        <line x1="500" y1="60" x2="500" y2="150" stroke="#8a99a2" stroke-width="1.5"/>
+        <rect x="470" y="30" width="18" height="14" fill="none" stroke="#FF6B4A" stroke-width="1.2" transform="translate(0,60) rotate(0)"/>
+        <rect x="440" y="150" width="120" height="46" rx="6" fill="#16212a" stroke="#FF6B4A" stroke-width="1"/>
+        <text x="500" y="170" text-anchor="middle" fill="#fff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">DIRECT</text>
+        <text x="500" y="186" text-anchor="middle" fill="#8a99a2" font-family="Inter, sans-serif" font-size="10">coupled — up to 1 ft</text>
+      </svg>
+      <div class="diagram-caption">FIG. 5 — Transformer-coupled (isolated) vs. direct-coupled (short) stub</div>
+    </div>
+
+    <table>
+      <tr><th>Method</th><th>Max length</th><th>Isolation</th><th>Trade-off</th></tr>
+      <tr><td>Transformer-coupled</td><td>20 ft (6 m)</td><td>Full galvanic isolation</td><td>Bulkier, needs coupler box</td></tr>
+      <tr><td>Direct-coupled</td><td>1 ft (30 cm)</td><td>Isolation resistors only</td><td>Terminal fault can affect main bus</td></tr>
+    </table>
+
+    <div class="callout">
+      <span class="label">Why it matters</span>
+      <p>An overly long or improperly terminated stub causes signal reflections that corrupt the Manchester-encoded bits. Strict length limits keep impedance mismatch small enough not to distort the waveform for other terminals sharing the bus.</p>
+    </div>
+  </section>
+
+  <footer>MIL-STD-1553B REFERENCE · COMPILED FROM DISCUSSION NOTES</footer>
+</div>
+
+<script>
+function runTransaction(){
+  const phase = document.getElementById('live-phase');
+  const bc = document.getElementById('node-bc');
+  const rt = document.getElementById('node-rt');
+  const cmd = document.getElementById('pkt-cmd');
+  const data = document.getElementById('pkt-data');
+  const status = document.getElementById('pkt-status');
+
+  const TRACK_W = document.querySelector('.live-track').offsetWidth || 420;
+  const packets = [cmd, data, status];
+
+  function resetPacket(p){
+    p.style.transition = 'none';
+    p.style.width = '0px';
+    p.style.opacity = '0';
+    p.style.left = '120px';
+  }
+  packets.forEach(resetPacket);
+  bc.classList.remove('active'); rt.classList.remove('active');
+
+  function send(p, forward, label, dur){
+    return new Promise(resolve => {
+      requestAnimationFrame(()=>{
+        p.style.transition = 'none';
+        p.style.opacity = '1';
+        p.style.width = '96px';
+        p.style.left = forward ? '120px' : (120 + TRACK_W - 96) + 'px';
+        phase.textContent = label;
+        (forward ? bc : rt).classList.add('active');
+        requestAnimationFrame(()=>{
+          p.style.transition = `left ${dur}ms linear`;
+          p.style.left = forward ? (120 + TRACK_W - 96) + 'px' : '120px';
+        });
+        setTimeout(()=>{
+          (forward ? bc : rt).classList.remove('active');
+          (forward ? rt : bc).classList.add('active');
+          setTimeout(()=>{
+            (forward ? rt : bc).classList.remove('active');
+            p.style.opacity = '0';
+            resolve();
+          }, 450);
+        }, dur);
+      });
+    });
+  }
+
+  (async () => {
+    phase.textContent = 'BC issues command word →';
+    await send(cmd, true, 'command word → RT 01', 2400);
+    await new Promise(r=>setTimeout(r,500));
+    phase.textContent = 'data word(s) following →';
+    await send(data, true, 'data word(s) → RT 01', 2400);
+    await new Promise(r=>setTimeout(r,600));
+    phase.textContent = '← RT returns status word';
+    await send(status, false, '← status word, RT 01 to BC', 2400);
+    await new Promise(r=>setTimeout(r,500));
+    phase.textContent = 'transaction complete';
+  })();
+}
+window.addEventListener('load', ()=> setTimeout(runTransaction, 500));
+</script>
+
+</body>
+</html>
